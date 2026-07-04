@@ -1,83 +1,49 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/app_theme.dart';
-import '../widgets/summary_card.dart';
-import '../widgets/expense_tile.dart';
+import '../services/auth_service.dart';
+import '../screens/auth_screen.dart';
+import '../screens/register_screen.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final recentExpenses = List.generate(
-      5,
-      (i) => ExpenseItem(
-        title: 'Coffee #${i + 1}',
-        amount: 4.5 + i,
-        date: DateTime.now().subtract(Duration(days: i)),
-      ),
-    );
-
+    final authService = AuthService();
     return Scaffold(
       backgroundColor: AppTheme.darkBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(
-          'Good ${_greetingHour()}, User',
-          style: GoogleFonts.inter(
-            color: Colors.white70,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        title: Text('Welcome', style: GoogleFonts.inter(color: Colors.white70, fontSize: 24)),
         centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pushNamed(context, '/register'),
-            child: const Text('Register', style: TextStyle(color: Colors.white70)),
-          ),
-        ],
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Expanded(child: SummaryCard(label: 'Expenses', amount: '₹ 12,340', color: Colors.redAccent)),
-                  SizedBox(width: 8),
-                  Expanded(child: SummaryCard(label: 'Income', amount: '₹ 20,500', color: Colors.greenAccent)),
-                  SizedBox(width: 8),
-                  Expanded(child: SummaryCard(label: 'Balance', amount: '₹ 8,160', color: Colors.blueAccent)),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Text(
-                'Recent Expenses',
-                style: GoogleFonts.inter(
-                  color: Colors.white70,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: recentExpenses.length,
-                  separatorBuilder: (_, __) => const Divider(color: Colors.white12, height: 1),
-                  itemBuilder: (context, index) {
-                    final e = recentExpenses[index];
-                    return ExpenseTile(item: e);
-                  },
-                ),
-              ),
-            ],
-          ),
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accent, padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12)),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => AuthScreen(
+                    authService: authService,
+                    onLoginSuccess: () {},
+                  ),
+                ));
+              },
+              child: const Text('Login'),
+            ),
+            const SizedBox(height: 20),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12), side: const BorderSide(color: AppTheme.accent)),
+              onPressed: () {
+                Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+              },
+              child: const Text('Register'),
+            ),
+          ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
